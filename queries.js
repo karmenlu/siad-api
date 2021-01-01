@@ -37,9 +37,9 @@ const createIdea = (request, response) => {
     if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
         response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
     } else {
-        const { name, cost, ldr_alt } = request.body
+        const { name, cost, ldr_alt, morning, afternoon, evening, overnight } = request.body
 
-        pool.query('INSERT INTO ideas (name, cost, ldr_alt) VALUES ($1, $2, $3)', [name, cost, ldr_alt], (error, results) => {
+        pool.query('INSERT INTO ideas (name, cost, ldr_alt, morning, afternoon, evening, overnight) VALUES ($1, $2, $3, $4, $5, $6, $7)', [name, cost, ldr_alt, morning, afternoon, evening, overnight], (error, results) => {
             if (error) {
                 throw error
             }
@@ -54,11 +54,11 @@ const updateIdea = (request, response) => {
         response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
     } else {
         const id = parseInt(request.params.id)
-        const { name, cost, ldr_alt } = request.body
+        const { name, cost, ldr_alt, morning, afternoon, evening, overnight} = request.body
 
         pool.query(
-            'UPDATE ideas SET name = $1, cost = $2, ldr_alt = $3 WHERE ideaid = $4',
-            [name, cost, ldr_alt, id],
+            'UPDATE ideas SET name = $1, cost = $2, ldr_alt = $3, morning = $4, afternoon = $5, evening = $6, overnight = $7 WHERE ideaid = $8',
+            [name, cost, ldr_alt, morning, afternoon, evening, overnight, id],
             (error, results) => {
                 if (error) {
                     throw error
@@ -84,97 +84,6 @@ const deleteIdea = (request, response) => {
     }
 }
 
-const getDayparts = (request, response) => {
-    if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
-        response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
-    } else {
-        pool.query('SELECT * FROM dayparts ORDER BY daypartid ASC', (error, results) => {
-            if (error) {
-                throw error
-            }
-            response.status(200).json(results.rows)
-        })
-    }
-}
-
-const getIdeaToParts = (request, response) => {
-    if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
-        response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
-    } else {
-        pool.query('SELECT * FROM ideatoparts ORDER BY ideatopartid ASC', (error, results) => {
-            if (error) {
-                throw error
-            }
-            response.status(200).json(results.rows)
-        })
-    }
-}
-
-const getIdeaToPartById = (request, response) => {
-    if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
-        response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
-    } else {
-        const id = parseInt(request.params.id)
-        pool.query('SELECT * FROM ideatoparts WHERE ideatopartid = $1', [id], (error, results) => {
-            if (error) {
-                throw error
-            }
-            response.status(200).json(results.rows)
-        })
-    }
-}
-
-const createIdeaToPart = (request, response) => {
-    if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
-        response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
-    } else {
-        const { ideaid, daypartid } = request.body
-
-        pool.query('INSERT INTO ideatoparts (ideaid, daypartid) VALUES ($1, $2)', [ideaid, daypartid], (error, results) => {
-            if (error) {
-                throw error
-            }
-            response.status(201).send(`IdeaToPart added.`)
-            console.log(results)
-        })        
-    }
-}
-
-const updateIdeaToPart = (request, response) => {
-    if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
-        response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
-    } else {
-        const id = parseInt(request.params.id)
-        const { ideaid, daypartid } = request.body
-
-        pool.query(
-            'UPDATE ideatoparts SET ideaid = $1, daypartid = $2 WHERE ideatopartid = $3',
-            [ideaid, daypartid, id],
-            (error, results) => {
-                if (error) {
-                    throw error
-                }
-                response.status(200).send(`IdeaToPart modified with ID: ${id}`)
-            }
-        )
-    }
-}
-
-const deleteIdeaToPart = (request, response) => {
-    if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
-        response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
-    } else {
-        const id = parseInt(request.params.id)
-
-        pool.query('DELETE FROM ideatoparts WHERE ideatopartid = $1', [id], (error, results) => {
-            if (error) {
-                throw error
-            }
-            response.status(200).send(`Delete attempt made for IdeaToPart with ideatopartid of ${id}`)
-        })
-    }
-}
-
 const getIdeasByCostMinMax = (request, response) => {
     if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
         response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
@@ -191,25 +100,16 @@ const getIdeasByCostMinMax = (request, response) => {
     }
 }
 
-const getDaypartIdByDaypartName = (request, response) => {
+const getIdeasByDayparts = (request, response) => {
     if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
         response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
     } else {
-        pool.query('SELECT daypartid FROM dayparts WHERE name = $1', [request.params.name], (error, results) => {
-            if (error) {
-                throw error
-            }
-            response.status(200).json(results.rows)
-        })
-    }
-}
-
-const getIdeasByDaypartId = (request, response) => {
-    if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
-        response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
-    } else {
-        const daypartid = parseInt(request.params.daypartid)
-        pool.query('SELECT * FROM ideas WHERE ideaid IN (SELECT ideaid FROM ideatoparts WHERE daypartid = $1) GROUP BY ideaid', [daypartid],(error, results) => {
+        const morning = request.params.morning == 'true' ? 'morning = true' : ''
+        const afternoon = request.params.afternoon == 'true' ? 'afternoon = true' : ''
+        const evening = request.params.evening == 'true' ? 'evening = true' : ''
+        const overnight = request.params.overnight == 'true' ? 'overnight = true' : ''
+        const selectedParts = [morning, afternoon, evening, overnight].filter(item => item).join(' OR ')
+        pool.query('SELECT * FROM ideas' + (selectedParts ? ' WHERE ' + selectedParts : '') + ' ORDER BY ideaid ASC', (error, results) => {
             if (error) {
                 throw error
             }
@@ -224,13 +124,6 @@ module.exports = {
     createIdea,
     updateIdea,
     deleteIdea,
-    getDayparts,
-    getIdeaToParts,
-    getIdeaToPartById,
-    createIdeaToPart,
-    updateIdeaToPart,
-    deleteIdeaToPart,
     getIdeasByCostMinMax,
-    getDaypartIdByDaypartName,
-    getIdeasByDaypartId,
+    getIdeasByDayparts,
 }
