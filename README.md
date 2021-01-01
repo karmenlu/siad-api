@@ -7,15 +7,9 @@
 | createIdea | POST | `/ideas`
 | updateIdea | PUT | `/ideas/:id`
 | deleteIdea | DELETE | `/ideas/:id`
-| getDayparts | GET | `/dayparts`
-| getIdeaToParts | GET | `/ideatoparts`
-| getIdeaToPartById | GET | `/ideatoparts/:id`
-| createIdeaToPart | POST | `/ideatoparts`
-| updateIdeaToPart | PUT | `/ideatoparts/:id`
-| deleteIdeaToPart | DELETE | `/ideatoparts/:id`
 | getIdeasByCostMinMax | GET | `/cost/:min/:max`
-| getDaypartIdByDaypartName | GET | `/daypartidbyname/:name`
-| getIdeasByDaypartId | GET | `/ideasbydaypartid/:daypartid`
+| getIdeasByDayparts | GET | `/daypartidbyname/:name`
+| getIdeasByDaypartId | GET | `/bydayparts/:morning/:afternoon/:evening/:overnight`
 
 Created with starter code from https://github.com/heroku/node-js-getting-started.git
 
