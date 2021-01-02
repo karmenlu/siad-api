@@ -16,6 +16,7 @@
 | getIdeasByCostMinMax | GET | `/cost/:min/:max`
 | getDaypartIdByDaypartName | GET | `/daypartidbyname/:name`
 | getIdeasByDaypartId | GET | `/ideasbydaypartid/:daypartid`
+| getIdeasByCostAndDayparts | GET | `/costdayparts/:min/:max/:morning/:afternoon/:evening/:overnight`
 
 Created with starter code from https://github.com/heroku/node-js-getting-started.git
 

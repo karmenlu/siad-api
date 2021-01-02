@@ -30,5 +30,6 @@ app.put('/ideas/:id', db.updateIdea)
 app.delete('/ideas/:id', db.deleteIdea)
 app.get('/cost/:min/:max', db.getIdeasByCostMinMax)
 app.get('/bydayparts/:morning/:afternoon/:evening/:overnight', db.getIdeasByDayparts)
+app.get('/costdayparts/:min/:max/:morning/:afternoon/:evening/:overnight', db.getIdeasByCostAndDayparts)
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))

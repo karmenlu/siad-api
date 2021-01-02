@@ -118,6 +118,26 @@ const getIdeasByDayparts = (request, response) => {
     }
 }
 
+const getIdeasByCostAndDayparts = (request, response) => {
+    if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
+        response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
+    } else {
+        const min = parseInt(request.params.min)
+        const max = parseInt(request.params.max)
+        const morning = request.params.morning == 'true' ? 'morning = true' : ''
+        const afternoon = request.params.afternoon == 'true' ? 'afternoon = true' : ''
+        const evening = request.params.evening == 'true' ? 'evening = true' : ''
+        const overnight = request.params.overnight == 'true' ? 'overnight = true' : ''
+        const selectedParts = [morning, afternoon, evening, overnight].filter(item => item).join(' OR ')
+        pool.query('SELECT * FROM ideas WHERE cost >= $1 AND cost <= $2' + (selectedParts ? ' AND (' + selectedParts + ')' : '') + ' ORDER BY ideaid ASC', [min, max], (error, results) => {
+            if (error) {
+                throw error
+            }
+            response.status(200).json(results.rows)
+        })
+    }
+}
+
 module.exports = {
     getIdeas,
     getIdeaById,
@@ -126,4 +146,5 @@ module.exports = {
     deleteIdea,
     getIdeasByCostMinMax,
     getIdeasByDayparts,
+    getIdeasByCostAndDayparts
 }
