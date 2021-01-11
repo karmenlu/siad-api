@@ -8,6 +8,7 @@
 | updateIdea | PUT | `/ideas/:id`
 | deleteIdea | DELETE | `/ideas/:id`
 | getIdeasByCostAndDayparts | GET | `/costdayparts/:min/:max/:morning/:afternoon/:evening/:overnight`
+| sendEmail | GET | `/sendEmail/:recipientEmail/:recipientName/:senderEmail/:senderName`
 
 Created with starter code from https://github.com/heroku/node-js-getting-started.git
 

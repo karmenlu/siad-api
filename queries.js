@@ -5,6 +5,8 @@ const pool = new Pool({
         rejectUnauthorized: false
     }
 });
+const mailjet = require ('node-mailjet')
+    .connect(process.env.MAILJET_PUBLIC_KEY, process.env.MAILJET_PRIVATE_KEY);
 
 const getIdeas = (request, response) => {
     if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
@@ -104,11 +106,53 @@ const getIdeasByCostAndDayparts = (request, response) => {
     }
 }
 
+const sendEmail = (request, response) => {
+    if (!request.header('apiKey') || request.header('apiKey') !== process.env.API_KEY) {
+        response.status(401).json({status: 'error', message: 'Unauthorized. Missing/incorrect API key.'})
+    } else {
+        const recipientEmail = request.params.recipientEmail
+        const recipientName = request.params.recipientName.replace(/_/g, ' ')
+        const senderEmail = request.params.senderEmail
+        const senderName = request.params.senderName.replace(/_/g, ' ')
+        const cart = request.query.cart;
+        const cartFormat = cart.replaceAll('_', ' ').replaceAll(',', '\n')
+        mailjet
+            .post("send", { version: "v3.1" })
+            .request({
+                Messages: [
+                    {
+                        From: {
+                            Email: process.env.MAILJET_EMAIL,
+                            Name: "So It's A Date",
+                        },
+                        To: [
+                            {
+                                Email: recipientEmail,
+                            },
+                        ],
+                        Subject: "Details from So It's A Date",
+                        TextPart: 
+                            "Hello " + recipientName + ",\n" +
+                            "So it’s a date! " + senderName + " invites you to do the following:\n\n" +
+                            cartFormat + "\n\n" +
+                            "Send a follow up email to:\n" +
+                            senderEmail + "\n" +
+                            "Have fun & stay safe,\n" +
+                            "So It’s A Date Dev Team\n",
+                        HTMLPart: "",
+                    },
+                ],
+            })
+        response.send("Done.")
+    }
+}
+
 module.exports = {
     getIdeas,
     getIdeaById,
     createIdea,
     updateIdea,
     deleteIdea,
-    getIdeasByCostAndDayparts
+    getIdeasByCostAndDayparts,
+    sendEmail
 }

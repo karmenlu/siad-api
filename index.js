@@ -29,5 +29,6 @@ app.post('/ideas', db.createIdea)
 app.put('/ideas/:id', db.updateIdea)
 app.delete('/ideas/:id', db.deleteIdea)
 app.get('/costdayparts/:min/:max/:morning/:afternoon/:evening/:overnight', db.getIdeasByCostAndDayparts)
+app.get('/sendEmail/:recipientEmail/:recipientName/:senderEmail/:senderName', db.sendEmail)
 
 app.listen(PORT, () => console.log(`Listening on ${ PORT }`))
